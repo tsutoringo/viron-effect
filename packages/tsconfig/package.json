@@ -1,0 +1,19 @@
+{
+  "name": "@viron-effect/tsconfig",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "exports": {
+    "./tsconfig.server.json": "./tsconfig.server.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.14.0",
+  "dependencies": {
+    "@effect/language-service": "^0.44.0"
+  }
+}
