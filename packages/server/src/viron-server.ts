@@ -1,18 +1,12 @@
 import {
   type HttpApi,
   HttpApiBuilder,
-  HttpApiEndpoint,
-  HttpApiGroup,
-  HttpApiSchema,
-  HttpLayerRouter,
+  type HttpApiGroup,
   HttpServerResponse,
   OpenApi,
 } from "@effect/platform";
-import { Api } from "@effect/platform/HttpApi";
 import { Router } from "@effect/platform/HttpApiBuilder";
-import { HttpBodyError } from "@effect/platform/HttpBody";
-import { Context, Effect, Layer, Option, Schema } from "effect";
-import { dual } from "effect/Function";
+import { Context, Effect, Layer, Option } from "effect";
 import { getEndpointByEndpointIdentifier } from "./endpoint";
 import { getEndpointOperationId } from "./helper/endpointOperationId";
 import { type Page, walkPages } from "./page";
@@ -20,28 +14,6 @@ import { type Page, walkPages } from "./page";
 type VironEffectConfig<Group extends HttpApiGroup.HttpApiGroup.Any> = {
   pages: Page<Group>;
 };
-
-const VironGroup = HttpApiGroup.make("Viron")
-  .add(
-    HttpApiEndpoint.get("getOpenApi")`/oas`.addSuccess(
-      Schema.String.pipe(
-        HttpApiSchema.withEncoding({
-          kind: "Json",
-          contentType: "application/json",
-        }),
-      ),
-    ),
-  )
-  .add(
-    HttpApiEndpoint.get("authentication")`/authentication`.addSuccess(
-      Schema.String.pipe(
-        HttpApiSchema.withEncoding({
-          kind: "Json",
-          contentType: "application/json",
-        }),
-      ),
-    ),
-  );
 
 /**
  * @example
@@ -96,8 +68,6 @@ export const layer = <
   | HttpApiGroup.HttpApiGroup.ErrorContext<Groups>
 > =>
   Effect.gen(function* () {
-    // const router = yield* HttpLayerRouter.HttpRouter;
-
     const WithVironServer = api.pipe((api) => {
       return api.annotate(OpenApi.Transform, (originalSpec) => {
         const spec = Context.getOption(api.annotations, OpenApi.Transform).pipe(
