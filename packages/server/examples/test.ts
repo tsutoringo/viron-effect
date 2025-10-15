@@ -104,6 +104,12 @@ export const SampleHttpApiWithViron = VironEffect.layer(SampleHttpApi, {
         description: "Example Viron page wiring user endpoints",
         contents: [
           {
+            type: "number",
+            title: "Active Users",
+            endpoint: "Metrics.getActiveUserCount",
+            resourceId: "Metrics",
+          },
+          {
             type: "table",
             title: "All Users",
             endpoint: "User.listUsers",

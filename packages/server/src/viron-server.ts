@@ -92,6 +92,9 @@ export const layer = <
             "x-table": {
               responseListKey: "list",
             },
+            "x-number": {
+              responseKey: "number",
+            },
           },
         };
       });

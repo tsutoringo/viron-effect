@@ -8,9 +8,9 @@ export type EndpointFor<Groups extends HttpApiGroup.HttpApiGroup.Any> = {
         HttpApiGroup.HttpApiGroup.WithName<Groups, GroupName>
       >
     >]: {
-      identifier: EndpointIdentifier<GroupName, EndpointName>;
-      group: HttpApiGroup.HttpApiGroup.WithName<Groups, GroupName>;
-      endpoint: HttpApiEndpoint.HttpApiEndpoint.WithName<
+      readonly identifier: EndpointIdentifier<GroupName, EndpointName>;
+      readonly group: HttpApiGroup.HttpApiGroup.WithName<Groups, GroupName>;
+      readonly endpoint: HttpApiEndpoint.HttpApiEndpoint.WithName<
         HttpApiGroup.HttpApiGroup.Endpoints<
           HttpApiGroup.HttpApiGroup.WithName<Groups, GroupName>
         >,
