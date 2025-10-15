@@ -17,6 +17,7 @@
     "tsx": "^4.20.6"
   },
   "devDependencies": {
+    "@effect/language-service": "^0.44.0",
     "@types/node": "^24.7.2",
     "@viron-effect/tsconfig": "workspace:*"
   }

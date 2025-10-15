@@ -1,5 +1,7 @@
 {
   "devDependencies": {
-    "@biomejs/biome": "2.2.4"
+    "@biomejs/biome": "2.2.4",
+    "@effect/language-service": "^0.44.0",
+    "typescript": "^5.9.3"
   }
 }

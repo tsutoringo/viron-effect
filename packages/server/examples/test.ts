@@ -5,6 +5,7 @@ import {
   HttpApiEndpoint,
   HttpApiGroup,
   HttpApiSchema,
+  HttpLayerRouter,
   OpenApi,
 } from "@effect/platform";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
@@ -93,7 +94,7 @@ const SampleMetricsGroupLive = HttpApiBuilder.group(
     ),
 );
 
-export const SampleHttpApiWithViron = VironEffect.make(SampleHttpApi, {
+export const SampleHttpApiWithViron = VironEffect.layer(SampleHttpApi, {
   pages: VironEffect.Page.Group({
     group: "Samples",
     child: [
@@ -118,7 +119,7 @@ export const SampleHttpApiWithViron = VironEffect.make(SampleHttpApi, {
 );
 
 // Set up the server using NodeHttpServer on port 3350
-const ServerLive = HttpApiBuilder.serve().pipe(
+HttpApiBuilder.serve().pipe(
   Layer.provide(
     HttpApiBuilder.middlewareCors({
       allowedOrigins: ["https://viron.plus", "https://local.viron.work:8000"],
@@ -126,8 +127,8 @@ const ServerLive = HttpApiBuilder.serve().pipe(
     }),
   ),
   Layer.provide(SampleHttpApiWithViron),
+  HttpLayerRouter.serve,
   Layer.provide(NodeHttpServer.layer(createServer, { port: 3350 })),
+  Layer.launch,
+  NodeRuntime.runMain,
 );
-
-// Launch the server
-Layer.launch(ServerLive).pipe(NodeRuntime.runMain);

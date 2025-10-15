@@ -4,9 +4,13 @@ import {
   HttpApiEndpoint,
   HttpApiGroup,
   HttpApiSchema,
+  HttpLayerRouter,
   HttpServerResponse,
   OpenApi,
 } from "@effect/platform";
+import { Api } from "@effect/platform/HttpApi";
+import { Router } from "@effect/platform/HttpApiBuilder";
+import { HttpBodyError } from "@effect/platform/HttpBody";
 import { Context, Effect, Layer, Option, Schema } from "effect";
 import { dual } from "effect/Function";
 import { getEndpointByEndpointIdentifier } from "./endpoint";
@@ -76,47 +80,41 @@ const VironGroup = HttpApiGroup.make("Viron")
  *
  * ```
  */
-export const make: {
-  <Groups extends HttpApiGroup.HttpApiGroup.Any = never>(
-    vironEffectConfig: VironEffectConfig<Groups>,
-  ): <Id extends string, E = never, R = never>(
-    self: HttpApi.HttpApi<Id, Groups, E, R>,
-  ) => ReturnType<typeof HttpApiBuilder.api<Id, Groups, E, R>>;
+export const layer = <
+  Id extends string = string,
+  Groups extends HttpApiGroup.HttpApiGroup.Any = never,
+  E = never,
+  R = never,
+>(
+  api: HttpApi.HttpApi<Id, Groups, E, R>,
+  vironEffectConfig: VironEffectConfig<Groups>,
+): Layer.Layer<
+  HttpApi.Api,
+  never,
+  | HttpApiGroup.HttpApiGroup.ToService<Id, Groups>
+  | R
+  | HttpApiGroup.HttpApiGroup.ErrorContext<Groups>
+> =>
+  Effect.gen(function* () {
+    // const router = yield* HttpLayerRouter.HttpRouter;
 
-  <
-    Id extends string,
-    Groups extends HttpApiGroup.HttpApiGroup.Any = never,
-    E = never,
-    R = never,
-  >(
-    self: HttpApi.HttpApi<Id, Groups, E, R>,
-    vironEffectConfig: VironEffectConfig<Groups>,
-  ): ReturnType<typeof HttpApiBuilder.api<Id, Groups, E, R>>;
-} = dual(
-  2,
-  <
-    Id extends string,
-    Groups extends HttpApiGroup.HttpApiGroup.Any = never,
-    E = never,
-    R = never,
-  >(
-    self: HttpApi.HttpApi<Id, Groups, E, R>,
-    vironEffectConfig: VironEffectConfig<Groups>,
-  ): ReturnType<typeof HttpApiBuilder.api<Id, Groups, E, R>> => {
-    const WithVironServer = self.add(VironGroup).pipe((api) => {
+    const WithVironServer = api.pipe((api) => {
       return api.annotate(OpenApi.Transform, (originalSpec) => {
         const spec = Context.getOption(api.annotations, OpenApi.Transform).pipe(
-          Option.map((f) => f(originalSpec)),
-          Option.getOrElse(() => originalSpec),
+          Option.match({
+            onSome: (f) => f(originalSpec),
+            onNone: () => originalSpec,
+          }),
         );
 
         const pages = buildVironConfig(
-          self as unknown as HttpApi.HttpApi.AnyWithProps,
+          api as unknown as HttpApi.HttpApi.AnyWithProps,
           vironEffectConfig,
         );
 
         return {
           ...spec,
+          // Viron が対応していないため
           openapi: "3.0.2",
           info: {
             ...spec.info,
@@ -131,25 +129,23 @@ export const make: {
 
     const openApi = OpenApi.fromApi(WithVironServer);
 
-    const VironLive = HttpApiBuilder.group(
-      WithVironServer as unknown as HttpApi.HttpApi<
-        Id,
-        typeof VironGroup,
-        E,
-        R
-      >,
-      "Viron",
-      (handlers) =>
-        handlers
-          .handle("getOpenApi", () =>
+    const router = Router.use((router) =>
+      Effect.gen(function* () {
+        yield* router
+          .get(
+            "/oas",
             HttpServerResponse.json(openApi, {
               headers: {
                 "x-viron-authtypes-path": "/authentication",
                 "access-control-expose-headers": "x-viron-authtypes-path",
               },
-            }).pipe(Effect.orDie),
+            }),
           )
-          .handle("authentication", () =>
+          .pipe(Effect.orDie);
+
+        yield* router
+          .get(
+            "/authentication",
             HttpServerResponse.json({
               list: [],
               oas: {
@@ -161,17 +157,14 @@ export const make: {
                 },
                 paths: {},
               },
-            }).pipe(Effect.orDie),
-          ),
+            }),
+          )
+          .pipe(Effect.orDie);
+      }),
     );
 
-    const api = HttpApiBuilder.api(WithVironServer).pipe(
-      Layer.provide(VironLive),
-    );
-
-    return api;
-  },
-);
+    return Layer.mergeAll(HttpApiBuilder.api(api), router);
+  }).pipe(Layer.unwrapEffect);
 
 const buildVironConfig = (
   api: HttpApi.HttpApi.AnyWithProps,

@@ -15,5 +15,8 @@
   "packageManager": "pnpm@10.14.0",
   "dependencies": {
     "@effect/language-service": "^0.44.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
   }
 }

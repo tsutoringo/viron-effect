@@ -2,8 +2,9 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit",
   },
+  "typescript.tsdk": "./node_modules/typescript/lib",
   "[typescript]": {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
   },
   "cSpell.words": [
     "baketsu",

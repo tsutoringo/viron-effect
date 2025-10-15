@@ -1,5 +1,12 @@
 {
   "extends": "@viron-effect/tsconfig/tsconfig.server.json",
   "include": ["src/**/*", "examples/test.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ]
+  }
 }
