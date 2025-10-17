@@ -6,12 +6,17 @@ import {
   OpenApi,
 } from "@effect/platform";
 import { Router } from "@effect/platform/HttpApiBuilder";
+import type { PathInput } from "@effect/platform/HttpRouter";
 import { Context, Effect, Layer, Option } from "effect";
 import { getEndpointByIdentifier } from "./endpoint";
 import { getEndpointOperationId } from "./helper/endpointOperationId";
 import { type Page, walkPages } from "./page";
 
 type VironEffectConfig<Group extends HttpApiGroup.HttpApiGroup.Any> = {
+  path?: {
+    oas?: PathInput;
+    auth?: PathInput;
+  };
   pages: Page<Group>[];
 };
 
@@ -102,14 +107,17 @@ export const layer = <
 
     const openApi = OpenApi.fromApi(WithVironServer);
 
+    const { oas: oasPath = "/oas", auth: authPath = "/authentication" } =
+      vironEffectConfig.path ?? {};
+
     const router = Router.use((router) =>
       Effect.gen(function* () {
         yield* router
           .get(
-            "/oas",
+            oasPath,
             HttpServerResponse.json(openApi, {
               headers: {
-                "x-viron-authtypes-path": "/authentication",
+                "x-viron-authtypes-path": authPath,
                 "access-control-expose-headers": "x-viron-authtypes-path",
               },
             }),
@@ -118,7 +126,7 @@ export const layer = <
 
         yield* router
           .get(
-            "/authentication",
+            authPath,
             HttpServerResponse.json({
               list: [],
               oas: {
