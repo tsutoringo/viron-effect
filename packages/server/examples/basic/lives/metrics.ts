@@ -1,12 +1,12 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { Effect } from "effect";
-import { SampleHttpApi } from "../api";
+import { SampleVironServer } from "../api";
 
 /**
  * Metrics group handlers implementation
  */
 export const SampleMetricsGroupLive = HttpApiBuilder.group(
-  SampleHttpApi,
+  SampleVironServer,
   "Metrics",
   (handlers) =>
     handlers

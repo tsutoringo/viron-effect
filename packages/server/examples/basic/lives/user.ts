@@ -1,12 +1,12 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { Effect } from "effect";
-import { SampleHttpApi } from "../api";
+import { SampleVironServer } from "../api";
 
 /**
  * User group handlers implementation
  */
 export const SampleUserGroupLive = HttpApiBuilder.group(
-  SampleHttpApi,
+  SampleVironServer,
   "User",
   (handlers) =>
     handlers

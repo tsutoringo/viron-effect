@@ -20,7 +20,7 @@ export const UserSchema = Schema.Struct({
 /**
  * Sample HTTP API definition
  */
-export const SampleHttpApi = HttpApi.make("SampleApi")
+export const SampleVironServer = HttpApi.make("SampleApi")
   .annotate(OpenApi.Description, "Viron Effect Sample API")
   .annotate(OpenApi.Servers, [
     {

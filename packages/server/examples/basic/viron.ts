@@ -1,42 +1,17 @@
 import { Layer } from "effect";
 import { VironEffect } from "../../src/lib";
-import { SampleHttpApi } from "./api";
+import { SampleVironServer } from "./api";
 import { SampleMetricsGroupLive, SampleUserGroupLive } from "./lives";
+import { UserDashboardPage } from "./pages/user-dashboard";
 
 /**
  * Viron configuration layer for the Sample API
  */
-export const SampleHttpApiWithViron = VironEffect.layer(SampleHttpApi, {
+export const SampleHttpApiWithViron = VironEffect.layer(SampleVironServer, {
   pages: [
     VironEffect.Page.Group({
       group: "Samples",
-      child: [
-        VironEffect.Page.Item({
-          id: "user-dashboard",
-          title: "ユーザーダッシュボード",
-          description: "Example Viron page wiring user endpoints",
-          contents: [
-            {
-              type: "number",
-              title: "Total User",
-              endpoint: "Metrics.getTotalUserCount",
-              resourceId: "Metrics",
-            },
-            {
-              type: "number",
-              title: "Active Users",
-              endpoint: "Metrics.getActiveUserCount",
-              resourceId: "Metrics",
-            },
-            {
-              type: "table",
-              title: "All Users",
-              endpoint: "User.listUsers",
-              resourceId: "User",
-            },
-          ],
-        }),
-      ],
+      child: [UserDashboardPage],
     }),
   ],
 }).pipe(
