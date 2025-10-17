@@ -13,11 +13,11 @@ import { getEndpointOperationId } from "./helper/endpointOperationId";
 import { type Page, walkPages } from "./page";
 
 type VironEffectConfig<Group extends HttpApiGroup.HttpApiGroup.Any> = {
-  path?: {
-    oas?: PathInput;
-    auth?: PathInput;
+  readonly path?: {
+    readonly oas?: PathInput;
+    readonly auth?: PathInput;
   };
-  pages: Page<Group>[];
+  readonly pages: ReadonlyArray<Page<Group>>;
 };
 
 /**

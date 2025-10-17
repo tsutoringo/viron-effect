@@ -34,9 +34,13 @@ export const { Item, Group, $match, $is } =
   Data.taggedEnum<VironPageDefinition>();
 
 export function* walkPages<Group extends HttpApiGroup.HttpApiGroup.Any>(
-  path: string[],
-  pages: Page<Group>[],
-): Generator<{ path: string[]; page: WithName<"Item", Group> }, void, void> {
+  path: ReadonlyArray<string>,
+  pages: ReadonlyArray<Page<Group>>,
+): Generator<
+  { path: ReadonlyArray<string>; page: WithName<"Item", Group> },
+  void,
+  void
+> {
   for (const page of pages) {
     switch (page._tag) {
       case "Item": {
