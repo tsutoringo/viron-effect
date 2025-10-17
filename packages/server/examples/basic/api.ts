@@ -6,7 +6,7 @@ import {
   OpenApi,
 } from "@effect/platform";
 import { Schema } from "effect";
-import { VironTableContent } from "../../src/schema";
+import { VironNumberContent, VironTableContent } from "../../src/schema";
 
 /**
  * User schema definition
@@ -43,13 +43,16 @@ export const SampleHttpApi = HttpApi.make("SampleApi")
       ),
   )
   .add(
-    HttpApiGroup.make("Metrics").add(
-      HttpApiEndpoint.get(
-        "getActiveUserCount",
-      )`/metrics/active-users`.addSuccess(
-        Schema.Struct({
-          number: Schema.Number,
-        }),
-      ),
-    ),
+    HttpApiGroup.make("Metrics")
+      .add(
+        HttpApiEndpoint.get("getActiveUserCount")`/active-users`.addSuccess(
+          VironNumberContent,
+        ),
+      )
+      .add(
+        HttpApiEndpoint.get("getTotalUserCount")`/total-users`.addSuccess(
+          VironNumberContent,
+        ),
+      )
+      .prefix("/metrics"),
   );

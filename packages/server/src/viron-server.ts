@@ -7,12 +7,12 @@ import {
 } from "@effect/platform";
 import { Router } from "@effect/platform/HttpApiBuilder";
 import { Context, Effect, Layer, Option } from "effect";
-import { getEndpointByEndpointIdentifier } from "./endpoint";
+import { getEndpointByIdentifier } from "./endpoint";
 import { getEndpointOperationId } from "./helper/endpointOperationId";
 import { type Page, walkPages } from "./page";
 
 type VironEffectConfig<Group extends HttpApiGroup.HttpApiGroup.Any> = {
-  pages: Page<Group>;
+  pages: Page<Group>[];
 };
 
 /**
@@ -150,10 +150,11 @@ const buildVironConfig = (
       description: page.description,
       group: path.join("/"),
       contents: page.contents.map((content) => {
-        const [group, endpoint] = getEndpointByEndpointIdentifier(
+        const [group, endpoint] = getEndpointByIdentifier(
           api.groups,
           content.endpoint,
         ).pipe(Option.getOrThrow);
+
         const operationId = getEndpointOperationId(group, endpoint);
 
         return {

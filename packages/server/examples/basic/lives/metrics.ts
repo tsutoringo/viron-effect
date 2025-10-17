@@ -9,9 +9,15 @@ export const SampleMetricsGroupLive = HttpApiBuilder.group(
   SampleHttpApi,
   "Metrics",
   (handlers) =>
-    handlers.handle("getActiveUserCount", () =>
-      Effect.succeed({
-        number: 42,
-      }),
-    ),
+    handlers
+      .handle("getActiveUserCount", () =>
+        Effect.succeed({
+          number: 42,
+        }),
+      )
+      .handle("getTotalUserCount", () =>
+        Effect.succeed({
+          number: 1000,
+        }),
+      ),
 );

@@ -35,19 +35,19 @@ export const { Item, Group, $match, $is } =
 
 export function* walkPages<Group extends HttpApiGroup.HttpApiGroup.Any>(
   path: string[],
-  page: Page<Group>,
+  pages: Page<Group>[],
 ): Generator<{ path: string[]; page: WithName<"Item", Group> }, void, void> {
-  switch (page._tag) {
-    case "Item": {
-      yield { path, page };
-      break;
-    }
-    case "Group": {
-      yield* page.child[Symbol.iterator]().flatMap((child) =>
-        walkPages([...path, page.group], child),
-      );
+  for (const page of pages) {
+    switch (page._tag) {
+      case "Item": {
+        yield { path, page };
+        break;
+      }
+      case "Group": {
+        yield* walkPages([...path, page.group], page.child);
 
-      break;
+        break;
+      }
     }
   }
 }

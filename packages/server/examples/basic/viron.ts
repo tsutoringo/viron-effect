@@ -7,30 +7,38 @@ import { SampleMetricsGroupLive, SampleUserGroupLive } from "./lives";
  * Viron configuration layer for the Sample API
  */
 export const SampleHttpApiWithViron = VironEffect.layer(SampleHttpApi, {
-  pages: VironEffect.Page.Group({
-    group: "Samples",
-    child: [
-      VironEffect.Page.Item({
-        id: "user-dashboard",
-        title: "ユーザーダッシュボード",
-        description: "Example Viron page wiring user endpoints",
-        contents: [
-          {
-            type: "number",
-            title: "Active Users",
-            endpoint: "Metrics.getActiveUserCount",
-            resourceId: "Metrics",
-          },
-          {
-            type: "table",
-            title: "All Users",
-            endpoint: "User.listUsers",
-            resourceId: "User",
-          },
-        ],
-      }),
-    ],
-  }),
+  pages: [
+    VironEffect.Page.Group({
+      group: "Samples",
+      child: [
+        VironEffect.Page.Item({
+          id: "user-dashboard",
+          title: "ユーザーダッシュボード",
+          description: "Example Viron page wiring user endpoints",
+          contents: [
+            {
+              type: "number",
+              title: "Total User",
+              endpoint: "Metrics.getTotalUserCount",
+              resourceId: "Metrics",
+            },
+            {
+              type: "number",
+              title: "Active Users",
+              endpoint: "Metrics.getActiveUserCount",
+              resourceId: "Metrics",
+            },
+            {
+              type: "table",
+              title: "All Users",
+              endpoint: "User.listUsers",
+              resourceId: "User",
+            },
+          ],
+        }),
+      ],
+    }),
+  ],
 }).pipe(
   Layer.provide(SampleUserGroupLive),
   Layer.provide(SampleMetricsGroupLive),
