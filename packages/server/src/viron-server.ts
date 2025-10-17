@@ -89,7 +89,7 @@ export const layer = <
 
         return {
           ...spec,
-          // Viron が対応していないため
+          // Viron が Effectの生成する3.1.x系に対応していないため
           openapi: "3.0.2",
           info: {
             ...spec.info,
